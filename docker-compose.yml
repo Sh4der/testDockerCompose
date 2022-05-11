@@ -1,0 +1,43 @@
+########################################################
+# Creates images
+# login db: postgres:postgres hostname: postgres
+# login pgadmin: admin@developer-blog.net:admin port 5555
+# Flask app available at http://localhost:5000/
+########################################################
+version: '3'
+services:
+  postgres:
+    image: postgres
+    hostname: postgres
+    # uncomment to make it available outside of docker 
+    # ports:
+    #   - 5432:5432
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: testdb
+    volumes:
+        - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - 5555:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@developer-blog.net
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+
+  python-docker: 
+    build: .
+    depends_on:
+      - postgres
+    ports:
+      - 8000:5000
+    restart: unless-stopped
+
+volumes:
+  postgres-data
